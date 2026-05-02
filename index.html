@@ -1,692 +1,124 @@
  <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>WebOS</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-
-  *{margin:0;padding:0;box-sizing:border-box;user-select:none;}
-  body{
-    font-family:'Outfit',sans-serif;
-    width:100vw;height:100vh;
-    overflow:hidden;
-    background:#1a1a2e;
-    color:#fff;
-  }
-  #desktop{
-    width:100%;height:calc(100vh - 52px);
-    position:relative;
-    background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80');
-    background-size:cover;
-    background-position:center;
-    transition: background-image 0.5s ease;
-  }
-  #desktop::before{
-    content:'';position:absolute;inset:0;
-    background:rgba(0,0,0,0.25);
-    pointer-events:none;
-  }
-
-  .desktop-icons{
-    position:absolute;top:20px;left:20px;
-    display:flex;flex-direction:column;gap:16px;
-  }
-  .d-icon{
-    display:flex;flex-direction:column;align-items:center;gap:6px;
-    width:72px;cursor:pointer;padding:8px;border-radius:10px;
-    transition:background 0.15s;
-  }
-  .d-icon:hover{background:rgba(255,255,255,0.15);}
-  .d-icon .ico{font-size:2.2rem;}
-  .d-icon span{font-size:0.72rem;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,0.8);line-height:1.3;}
-
-  #taskbar{
-    position:fixed;bottom:0;left:0;right:0;
-    height:52px;
-    background:rgba(15,15,25,0.85);
-    backdrop-filter:blur(20px);
-    border-top:1px solid rgba(255,255,255,0.08);
-    display:flex;align-items:center;
-    padding:0 16px;
-    gap:4px;
-    z-index:1000;
-  }
-  .tb-icon{
-    width:42px;height:42px;
-    display:flex;align-items:center;justify-content:center;
-    border-radius:10px;font-size:1.4rem;
-    cursor:pointer;
-    transition:background 0.15s, transform 0.1s;
-    position:relative;
-  }
-  .tb-icon:hover{background:rgba(255,255,255,0.12);transform:translateY(-3px);}
-  .tb-icon:active{transform:translateY(0);}
-  .tb-icon.active::after{
-    content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);
-    width:4px;height:4px;border-radius:50%;background:#7c6ff7;
-  }
-  .tb-sep{width:1px;height:28px;background:rgba(255,255,255,0.12);margin:0 6px;}
-
-  #tb-clock{
-    margin-left:auto;
-    display:flex;flex-direction:column;align-items:flex-end;
-    font-size:0.72rem;color:rgba(255,255,255,0.8);line-height:1.4;
-  }
-  #tb-time{font-size:0.9rem;font-weight:600;}
-
-  
-  .win{
-    position:absolute;
-    min-width:320px;min-height:200px;
-    background:rgba(20,20,35,0.92);
-    backdrop-filter:blur(30px);
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:14px;
-    box-shadow:0 24px 80px rgba(0,0,0,0.6);
-    display:flex;flex-direction:column;
-    overflow:hidden;
-    z-index:100;
-    transition:box-shadow 0.2s;
-  }
-  .win.focused{
-    border-color:rgba(124,111,247,0.4);
-    box-shadow:0 24px 80px rgba(0,0,0,0.7),0 0 0 1px rgba(124,111,247,0.2);
-    z-index:200;
-  }
-  .win-bar{
-    height:38px;
-    display:flex;align-items:center;
-    padding:0 12px;
-    gap:8px;
-    cursor:grab;
-    background:rgba(255,255,255,0.04);
-    border-bottom:1px solid rgba(255,255,255,0.06);
-    flex-shrink:0;
-  }
-  .win-bar:active{cursor:grabbing;}
-  .win-title{font-size:0.82rem;font-weight:500;flex:1;color:rgba(255,255,255,0.85);}
-  .win-btn{
-    width:13px;height:13px;border-radius:50%;cursor:pointer;
-    transition:filter 0.15s;flex-shrink:0;
-  }
-  .win-btn:hover{filter:brightness(1.3);}
-  .win-close{background:#ff5f57;}
-  .win-min{background:#febc2e;}
-  .win-max{background:#28c840;}
-  .win-body{flex:1;overflow:auto;padding:16px;}
-
-  
-  .win-resize{
-    position:absolute;bottom:0;right:0;
-    width:16px;height:16px;cursor:se-resize;
-    opacity:0.3;
-  }
-  .win-resize::after{
-    content:'';position:absolute;bottom:4px;right:4px;
-    width:8px;height:8px;
-    border-right:2px solid #fff;
-    border-bottom:2px solid #fff;
-    border-radius:0 0 3px 0;
-  }
-
-
-
-  .explorer-nav{
-    display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;
-  }
-  .exp-folder{
-    display:flex;flex-direction:column;align-items:center;gap:6px;
-    padding:10px 14px;border-radius:10px;cursor:pointer;
-    transition:background 0.15s;width:80px;
-  }
-  .exp-folder:hover{background:rgba(255,255,255,0.1);}
-  .exp-folder .ico{font-size:1.8rem;}
-  .exp-folder span{font-size:0.7rem;text-align:center;color:rgba(255,255,255,0.7);}
-
-
-
-
-  #notepad-area{
-    width:100%;height:100%;min-height:220px;
-    background:transparent;border:none;outline:none;
-    color:#e0e0e0;font-family:'Outfit',sans-serif;
-    font-size:0.9rem;line-height:1.7;resize:none;
-  }
-
-
-
-
-  .setting-row{
-    display:flex;align-items:center;justify-content:space-between;
-    padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);
-    font-size:0.88rem;
-  }
-  .setting-row:last-child{border:none;}
-  .setting-label{color:rgba(255,255,255,0.7);}
-  .toggle{
-    width:40px;height:22px;background:#333;border-radius:11px;
-    position:relative;cursor:pointer;transition:background 0.2s;
-  }
-  .toggle.on{background:#7c6ff7;}
-  .toggle::after{
-    content:'';position:absolute;top:3px;left:3px;
-    width:16px;height:16px;border-radius:50%;background:#fff;
-    transition:left 0.2s;
-  }
-  .toggle.on::after{left:21px;}
-
-  /* Wallpaper picker */
-  .wp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
-  .wp-thumb{
-    height:60px;border-radius:8px;cursor:pointer;
-    border:2px solid transparent;transition:border-color 0.15s,transform 0.1s;
-    background-size:cover;background-position:center;
-  }
-  .wp-thumb:hover{transform:scale(1.04);}
-  .wp-thumb.active{border-color:#7c6ff7;}
-
-
-
-
-  .calc-display{
-    background:rgba(0,0,0,0.3);border-radius:10px;
-    padding:12px 16px;text-align:right;margin-bottom:12px;
-  }
-  .calc-expr{font-size:0.75rem;color:rgba(255,255,255,0.4);min-height:18px;}
-  .calc-num{font-size:2rem;font-weight:600;word-break:break-all;}
-  .calc-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-  .cb{
-    padding:12px 0;border-radius:10px;border:none;
-    font-family:'Outfit',sans-serif;font-size:1rem;font-weight:500;
-    cursor:pointer;transition:filter 0.1s,transform 0.1s;color:#fff;
-  }
-  .cb:hover{filter:brightness(1.2);}
-  .cb:active{transform:scale(0.93);}
-  .cb.num{background:rgba(255,255,255,0.1);}
-  .cb.op{background:rgba(124,111,247,0.5);}
-  .cb.eq{background:#7c6ff7;}
-  .cb.fn{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6);}
-  .cb.wide{grid-column:span 2;}
-
-  /* About */
-  .about-body{text-align:center;padding:12px 0;}
-  .about-logo{font-size:3rem;margin-bottom:8px;}
-  .about-name{font-size:1.3rem;font-weight:700;color:#7c6ff7;}
-  .about-ver{font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:4px;}
-  .about-info{margin-top:16px;font-size:0.85rem;color:rgba(255,255,255,0.6);line-height:1.8;}
-
-
-
-
-  #ctx-menu{
-    position:fixed;
-    background:rgba(25,25,40,0.95);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,0.1);
-    border-radius:10px;
-    padding:6px;
-    z-index:9999;
-    min-width:180px;
-    box-shadow:0 12px 40px rgba(0,0,0,0.5);
-    display:none;
-  }
-  .ctx-item{
-    padding:8px 14px;border-radius:7px;font-size:0.85rem;
-    cursor:pointer;display:flex;align-items:center;gap:10px;
-    transition:background 0.12s;color:rgba(255,255,255,0.85);
-  }
-  .ctx-item:hover{background:rgba(124,111,247,0.25);}
-  .ctx-sep{height:1px;background:rgba(255,255,255,0.08);margin:4px 0;}
-
-  /* Boot screen */
-  #boot{
-    position:fixed;inset:0;
-    background:#0a0a12;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    z-index:99999;
-    transition:opacity 0.6s;
-  }
-  #boot .boot-logo{font-size:3rem;margin-bottom:12px;}
-  #boot .boot-name{font-size:1.4rem;font-weight:700;color:#7c6ff7;letter-spacing:2px;}
-  #boot .boot-bar{
-    width:200px;height:3px;background:rgba(255,255,255,0.1);
-    border-radius:2px;margin-top:24px;overflow:hidden;
-  }
-  #boot .boot-prog{
-    height:100%;background:#7c6ff7;width:0;
-    border-radius:2px;
-    animation:bootLoad 2s ease forwards;
-  }
-  @keyframes bootLoad{to{width:100%;}}
-
-  /* Notification */
-  #notif{
-    position:fixed;top:16px;right:16px;
-    background:rgba(25,25,40,0.95);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(124,111,247,0.3);
-    border-radius:12px;padding:12px 16px;
-    min-width:240px;max-width:300px;
-    z-index:8000;
-    transform:translateX(320px);
-    transition:transform 0.3s ease;
-    font-size:0.85rem;
-  }
-  #notif.show{transform:translateX(0);}
-  #notif-title{font-weight:600;margin-bottom:4px;}
-  #notif-body{color:rgba(255,255,255,0.6);font-size:0.8rem;}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WebOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/reset.css"/>
+  <link rel="stylesheet" href="css/desktop.css"/>
+  <link rel="stylesheet" href="css/dock.css"/>
+  <link rel="stylesheet" href="css/window.css"/>
+  <link rel="stylesheet" href="css/apps.css"/>
+  <link rel="stylesheet" href="css/ui.css"/>
 </head>
 <body>
 
-
-
-<div id="boot">
-  <div class="boot-logo">💻</div>
-  <div class="boot-name">WebOS</div>
-  <div class="boot-bar"><div class="boot-prog"></div></div>
-</div>
-
-
-
-<div id="desktop">
-  <div class="desktop-icons">
-    <div class="d-icon" onclick="openApp('explorer')"><div class="ico">📁</div><span>Files</span></div>
-    <div class="d-icon" onclick="openApp('notepad')"><div class="ico">📝</div><span>Notepad</span></div>
-    <div class="d-icon" onclick="openApp('calc')"><div class="ico">🧮</div><span>Calculator</span></div>
-    <div class="d-icon" onclick="openApp('settings')"><div class="ico">⚙️</div><span>Settings</span></div>
-    <div class="d-icon" onclick="openApp('about')"><div class="ico">ℹ️</div><span>About</span></div>
+  <div id="boot-screen">
+    <div class="boot-logo">💻</div>
+    <div class="boot-name">WebOS</div>
+    <div class="boot-bar"><div class="boot-progress"></div></div>
   </div>
-</div>
 
-<div id="taskbar">
-  <div class="tb-icon" onclick="openApp('explorer')" title="Files" id="tb-explorer">📁</div>
-  <div class="tb-icon" onclick="openApp('notepad')" title="Notepad" id="tb-notepad">📝</div>
-  <div class="tb-icon" onclick="openApp('calc')" title="Calculator" id="tb-calc">🧮</div>
-  <div class="tb-sep"></div>
-  <div class="tb-icon" onclick="openApp('settings')" title="Settings" id="tb-settings">⚙️</div>
-  <div id="tb-clock">
-    <span id="tb-time">00:00</span>
-    <span id="tb-date">Mon, 1 Jan</span>
-  </div>
-</div>
+  <div id="desktop">
 
-<div id="ctx-menu">
-  <div class="ctx-item" onclick="changeWallpaper()">🖼️ Change Wallpaper</div>
-  <div class="ctx-item" onclick="openApp('settings')">⚙️ Settings</div>
-  <div class="ctx-sep"></div>
-  <div class="ctx-item" onclick="openApp('about')">ℹ️ About WebOS</div>
-</div>
-
-<div id="notif">
-  <div id="notif-title">WebOS</div>
-  <div id="notif-body">Welcome! Right-click desktop for options.</div>
-</div>
-
-<script>
-
-
-
-
-
-const wallpapers = [
-  'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80',
-  'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80',
-  'https://images.unsplash.com/photo-1475274047050-1d0c0975864c?w=1920&q=80',
-  'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1920&q=80',
-  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80',
-  'https://images.unsplash.com/photo-1540206395-68808572332f?w=1920&q=80',
-];
-let currentWP = 0;
-
-function changeWallpaper() {
-  hideCtx();
-  currentWP = (currentWP + 1) % wallpapers.length;
-  document.getElementById('desktop').style.backgroundImage = `url('${wallpapers[currentWP]}')`;
-  showNotif('Wallpaper Changed', 'New wallpaper applied!');
-  // update settings thumbs
-  document.querySelectorAll('.wp-thumb').forEach((t,i)=>{
-    t.classList.toggle('active', i === currentWP);
-  });
-}
-
-
-
-
-
-function updateClock() {
-  const now = new Date();
-  const h = String(now.getHours()).padStart(2,'0');
-  const m = String(now.getMinutes()).padStart(2,'0');
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  document.getElementById('tb-time').textContent = `${h}:${m}`;
-  document.getElementById('tb-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-}
-updateClock();
-setInterval(updateClock, 1000);
-
-
-
-
-
-
-function showNotif(title, body) {
-  document.getElementById('notif-title').textContent = title;
-  document.getElementById('notif-body').textContent = body;
-  const n = document.getElementById('notif');
-  n.classList.add('show');
-  setTimeout(() => n.classList.remove('show'), 3000);
-}
-
-
-
-
-
-
-document.getElementById('desktop').addEventListener('contextmenu', e => {
-  e.preventDefault();
-  const menu = document.getElementById('ctx-menu');
-  menu.style.left = Math.min(e.clientX, window.innerWidth - 190) + 'px';
-  menu.style.top = Math.min(e.clientY, window.innerHeight - 150) + 'px';
-  menu.style.display = 'block';
-});
-document.addEventListener('click', hideCtx);
-function hideCtx() { document.getElementById('ctx-menu').style.display = 'none'; }
-
-
-
-
-
-let zTop = 200;
-const openWindows = {};
-
-const appDefs = {
-  explorer: { title: '📁  File Explorer', width: 480, height: 340, content: explorerHTML },
-  notepad:  { title: '📝  Notepad',       width: 460, height: 360, content: notepadHTML },
-  calc:     { title: '🧮  Calculator',    width: 300, height: 420, content: calcHTML },
-  settings: { title: '⚙️  Settings',      width: 420, height: 400, content: settingsHTML },
-  about:    { title: 'ℹ️  About WebOS',   width: 340, height: 300, content: aboutHTML },
-};
-
-function openApp(id) {
-  if (openWindows[id]) {
-    focusWin(openWindows[id]);
-    return;
-  }
-  const def = appDefs[id];
-  const win = document.createElement('div');
-  win.className = 'win focused';
-  win.id = 'win-' + id;
-  // center with slight offset
-  const x = Math.random() * 120 + 80;
-  const y = Math.random() * 60 + 40;
-  win.style.cssText = `left:${x}px;top:${y}px;width:${def.width}px;height:${def.height}px;`;
-  win.innerHTML = `
-    <div class="win-bar" onmousedown="startDrag(event,'${id}')">
-      <div class="win-btn win-close" onclick="closeApp('${id}')"></div>
-      <div class="win-btn win-min" onclick="minimizeApp('${id}')"></div>
-      <div class="win-btn win-max" onclick="maximizeApp('${id}')"></div>
-      <div class="win-title">${def.title}</div>
-    </div>
-    <div class="win-body">${def.content(id)}</div>
-    <div class="win-resize" onmousedown="startResize(event,'${id}')"></div>
-  `;
-  win.addEventListener('mousedown', () => focusWin(id));
-  document.getElementById('desktop').appendChild(win);
-  openWindows[id] = id;
-  document.getElementById('tb-' + id) && document.getElementById('tb-' + id).classList.add('active');
-  if (id === 'calc') initCalc();
-  if (id === 'settings') initSettings();
-}
-
-function focusWin(id) {
-  document.querySelectorAll('.win').forEach(w => w.classList.remove('focused'));
-  const el = document.getElementById('win-' + id);
-  if (el) { el.classList.add('focused'); el.style.zIndex = ++zTop; }
-}
-
-function closeApp(id) {
-  const el = document.getElementById('win-' + id);
-  if (el) { el.remove(); delete openWindows[id]; }
-  const tb = document.getElementById('tb-' + id);
-  if (tb) tb.classList.remove('active');
-}
-
-function minimizeApp(id) {
-  const el = document.getElementById('win-' + id);
-  if (el) el.style.display = el.style.display === 'none' ? 'flex' : 'none';
-}
-
-let maximized = {};
-function maximizeApp(id) {
-  const el = document.getElementById('win-' + id);
-  if (!el) return;
-  if (maximized[id]) {
-    el.style.cssText = maximized[id];
-    delete maximized[id];
-  } else {
-    maximized[id] = el.style.cssText;
-    el.style.cssText = 'left:0;top:0;width:100%;height:calc(100vh - 52px);border-radius:0;z-index:' + (++zTop);
-    el.classList.add('focused');
-  }
-}
-
-
-
-
-function startDrag(e, id) {
-  if (e.target.classList.contains('win-btn')) return;
-  const el = document.getElementById('win-' + id);
-  focusWin(id);
-  const ox = e.clientX - el.offsetLeft;
-  const oy = e.clientY - el.offsetTop;
-  function onMove(e) {
-    el.style.left = Math.max(0, e.clientX - ox) + 'px';
-    el.style.top  = Math.max(0, Math.min(e.clientY - oy, window.innerHeight - 90)) + 'px';
-  }
-  function onUp() {
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  }
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
-
-
-
-
-function startResize(e, id) {
-  e.stopPropagation();
-  const el = document.getElementById('win-' + id);
-  const ox = e.clientX, oy = e.clientY;
-  const ow = el.offsetWidth, oh = el.offsetHeight;
-  function onMove(e) {
-    el.style.width  = Math.max(280, ow + e.clientX - ox) + 'px';
-    el.style.height = Math.max(180, oh + e.clientY - oy) + 'px';
-  }
-  function onUp() {
-    document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
-  }
-  document.addEventListener('mousemove', onMove);
-  document.addEventListener('mouseup', onUp);
-}
-
-
-
-
-function explorerHTML() {
-  return `
-    <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);margin-bottom:12px;">📍 Home</div>
-    <div class="explorer-nav">
-      ${['🖥️ Desktop','📄 Documents','🖼️ Pictures','🎵 Music','📥 Downloads','🗑️ Trash'].map(f=>`
-        <div class="exp-folder">
-          <div class="ico">${f.split(' ')[0]}</div>
-          <span>${f.split(' ')[1]}</span>
-        </div>`).join('')}
-    </div>
-    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">
-      <div style="font-size:0.78rem;color:rgba(255,255,255,0.35);margin-bottom:10px;">RECENT FILES</div>
-      ${['resume.pdf','notes.txt','project.html'].map(f=>`
-        <div style="display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:7px;cursor:pointer;transition:background 0.1s;"
-          onmouseover="this.style.background='rgba(255,255,255,0.07)'"
-          onmouseout="this.style.background='transparent'">
-          <span>📄</span>
-          <span style="font-size:0.85rem;color:rgba(255,255,255,0.7);">${f}</span>
-        </div>`).join('')}
-    </div>`;
-}
-
-function notepadHTML() {
-  return `<textarea id="notepad-area" placeholder="Type something here..."></textarea>`;
-}
-
-function calcHTML() {
-  return `
-    <div class="calc-display">
-      <div class="calc-expr" id="calc-expr"></div>
-      <div class="calc-num" id="calc-num">0</div>
-    </div>
-    <div class="calc-btns">
-      <button class="cb fn" onclick="calcFn('AC')">AC</button>
-      <button class="cb fn" onclick="calcFn('+/-')">+/-</button>
-      <button class="cb fn" onclick="calcFn('%')">%</button>
-      <button class="cb op" onclick="calcOp('/')">÷</button>
-
-      <button class="cb num" onclick="calcNum('7')">7</button>
-      <button class="cb num" onclick="calcNum('8')">8</button>
-      <button class="cb num" onclick="calcNum('9')">9</button>
-      <button class="cb op" onclick="calcOp('*')">×</button>
-
-      <button class="cb num" onclick="calcNum('4')">4</button>
-      <button class="cb num" onclick="calcNum('5')">5</button>
-      <button class="cb num" onclick="calcNum('6')">6</button>
-      <button class="cb op" onclick="calcOp('-')">−</button>
-
-      <button class="cb num" onclick="calcNum('1')">1</button>
-      <button class="cb num" onclick="calcNum('2')">2</button>
-      <button class="cb num" onclick="calcNum('3')">3</button>
-      <button class="cb op" onclick="calcOp('+')">+</button>
-
-      <button class="cb num wide" onclick="calcNum('0')">0</button>
-      <button class="cb num" onclick="calcNum('.')">.</button>
-      <button class="cb eq" onclick="calcEq()">=</button>
-    </div>`;
-}
-
-function settingsHTML() {
-  const wps = wallpapers.map((w,i) => `
-    <div class="wp-thumb ${i===currentWP?'active':''}" id="wp-${i}"
-      style="background-image:url('${w}')"
-      onclick="setWallpaper(${i})"></div>`).join('');
-  return `
-    <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:14px;font-weight:600;letter-spacing:0.5px;">APPEARANCE</div>
-    <div class="setting-row">
-      <span class="setting-label">Dark Mode</span>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="setting-row">
-      <span class="setting-label">Blur Effects</span>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div class="setting-row">
-      <span class="setting-label">Animations</span>
-      <div class="toggle on" onclick="this.classList.toggle('on')"></div>
-    </div>
-    <div style="margin-top:16px;">
-      <div style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-bottom:10px;font-weight:600;letter-spacing:0.5px;">WALLPAPER</div>
-      <div class="wp-grid">${wps}</div>
-    </div>`;
-}
-
-function aboutHTML() {
-  return `
-    <div class="about-body">
-      <div class="about-logo">💻</div>
-      <div class="about-name">WebOS</div>
-      <div class="about-ver">Version 1.0 — Built with HTML, CSS & JS</div>
-      <div class="about-info">
-        Apps: Files, Notepad, Calculator, Settings<br>
-        Features: Drag, Resize, Maximize, Minimize<br>
-        Wallpaper changer, Live clock<br><br>
-        <span style="color:#7c6ff7;">Made by Apna Naam 🚀</span>
+    <div class="desktop-icons">
+      <div class="desktop-icon" ondblclick="openApp('explorer')">
+        <div class="icon-emoji">📁</div><span>Files</span>
       </div>
-    </div>`;
-}
+      <div class="desktop-icon" ondblclick="openApp('notepad')">
+        <div class="icon-emoji">📝</div><span>Notepad</span>
+      </div>
+      <div class="desktop-icon" ondblclick="openApp('calc')">
+        <div class="icon-emoji">🧮</div><span>Calculator</span>
+      </div>
+      <div class="desktop-icon" ondblclick="openApp('settings')">
+        <div class="icon-emoji">⚙️</div><span>Settings</span>
+      </div>
+      <div class="desktop-icon" ondblclick="openApp('about')">
+        <div class="icon-emoji">ℹ️</div><span>About</span>
+      </div>
+    </div>
 
+    <div id="desktop-clock">
+      <div id="desk-time">
+        <span id="desk-hours">00</span><span class="desk-colon">:</span><span id="desk-minutes">00</span><span class="desk-ampm" id="desk-ampm">AM</span>
+      </div>
+      <div id="desk-date"></div>
+      <div id="desk-seconds-bar"><div id="desk-seconds-fill"></div></div>
+    </div>
 
+  </div>
 
+  <div id="menubar">
+    <span class="menubar-apple">⌘</span>
+    <span class="menubar-item menubar-bold" id="menubar-appname">Finder</span>
+    <span class="menubar-item">File</span>
+    <span class="menubar-item">Edit</span>
+    <span class="menubar-item">View</span>
+    <div class="menubar-right">
+      <span id="menubar-clock"></span>
+    </div>
+  </div>
 
-let calcState = { num: '0', expr: '', op: null, reset: false };
-function initCalc() {}
-function calcDisp() {
-  const d = document.getElementById('calc-num');
-  const e = document.getElementById('calc-expr');
-  if (d) d.textContent = calcState.num;
-  if (e) e.textContent = calcState.expr;
-}
-function calcNum(n) {
-  if (calcState.reset) { calcState.num = '0'; calcState.reset = false; }
-  if (n === '.' && calcState.num.includes('.')) return;
-  calcState.num = calcState.num === '0' && n !== '.' ? n : calcState.num + n;
-  calcDisp();
-}
-function calcOp(op) {
-  calcState.expr = calcState.num + ' ' + op;
-  calcState.op = op;
-  calcState.prev = parseFloat(calcState.num);
-  calcState.reset = true;
-  calcDisp();
-}
-function calcEq() {
-  if (!calcState.op) return;
-  const a = calcState.prev, b = parseFloat(calcState.num);
-  let r;
-  if (calcState.op === '+') r = a + b;
-  else if (calcState.op === '-') r = a - b;
-  else if (calcState.op === '*') r = a * b;
-  else if (calcState.op === '/') r = b !== 0 ? a / b : 'Error';
-  calcState.expr = calcState.prev + ' ' + calcState.op + ' ' + b + ' =';
-  calcState.num = String(parseFloat(r.toFixed(10)));
-  calcState.op = null;
-  calcState.reset = true;
-  calcDisp();
-}
-function calcFn(f) {
-  if (f === 'AC') { calcState = { num:'0', expr:'', op:null, reset:false }; }
-  else if (f === '+/-') { calcState.num = String(-parseFloat(calcState.num)); }
-  else if (f === '%') { calcState.num = String(parseFloat(calcState.num) / 100); }
-  calcDisp();
-}
+  <div id="dock-container">
+    <div id="dock">
+      <div class="dock-item" data-app="explorer" onclick="openApp('explorer')" id="dock-explorer">
+        <div class="dock-icon-wrap"><span>📁</span></div>
+        <span class="dock-label">Files</span>
+        <div class="dock-dot" id="dot-explorer"></div>
+      </div>
+      <div class="dock-item" data-app="notepad" onclick="openApp('notepad')" id="dock-notepad">
+        <div class="dock-icon-wrap"><span>📝</span></div>
+        <span class="dock-label">Notepad</span>
+        <div class="dock-dot" id="dot-notepad"></div>
+      </div>
+      <div class="dock-item" data-app="calc" onclick="openApp('calc')" id="dock-calc">
+        <div class="dock-icon-wrap"><span>🧮</span></div>
+        <span class="dock-label">Calculator</span>
+        <div class="dock-dot" id="dot-calc"></div>
+      </div>
+      <div class="dock-item" data-app="settings" onclick="openApp('settings')" id="dock-settings">
+        <div class="dock-icon-wrap"><span>⚙️</span></div>
+        <span class="dock-label">Settings</span>
+        <div class="dock-dot" id="dot-settings"></div>
+      </div>
+      <div class="dock-divider"></div>
+      <div class="dock-item" data-app="about" onclick="openApp('about')" id="dock-about">
+        <div class="dock-icon-wrap"><span>ℹ️</span></div>
+        <span class="dock-label">About</span>
+        <div class="dock-dot" id="dot-about"></div>
+      </div>
+    </div>
+  </div>
 
+  <div id="context-menu">
+    <div class="ctx-item" onclick="cycleWallpaper()">🖼️ Change Wallpaper</div>
+    <div class="ctx-item" onclick="openApp('settings')">⚙️ Settings</div>
+    <div class="ctx-sep"></div>
+    <div class="ctx-item" onclick="openApp('about')">ℹ️ About WebOS</div>
+  </div>
 
+  <div id="notification">
+    <div id="notif-icon">💻</div>
+    <div id="notif-text">
+      <div id="notif-title">WebOS</div>
+      <div id="notif-body">Welcome! Right-click desktop for options.</div>
+    </div>
+  </div>
 
-
-function setWallpaper(i) {
-  currentWP = i;
-  document.getElementById('desktop').style.backgroundImage = `url('${wallpapers[i]}')`;
-  document.querySelectorAll('.wp-thumb').forEach((t,j) => t.classList.toggle('active', j === i));
-  showNotif('Wallpaper Changed', 'New wallpaper applied!');
-}
-function initSettings() {}
-
-
-
-
-
-
-setTimeout(() => {
-  const boot = document.getElementById('boot');
-  boot.style.opacity = '0';
-  setTimeout(() => {
-    boot.remove();
-    showNotif('Welcome to WebOS', 'Double-click icons or right-click desktop to explore!');
-  }, 600);
-}, 2200);
-</script>
+  <script src="js/core/wallpapers.js"></script>
+  <script src="js/core/clock.js"></script>
+  <script src="js/core/notification.js"></script>
+  <script src="js/core/contextmenu.js"></script>
+  <script src="js/core/windowmanager.js"></script>
+  <script src="js/core/dock.js"></script>
+  <script src="js/apps/explorer.js"></script>
+  <script src="js/apps/notepad.js"></script>
+  <script src="js/apps/calculator.js"></script>
+  <script src="js/apps/settings.js"></script>
+  <script src="js/apps/about.js"></script>
+  <script src="js/core/boot.js"></script>
 </body>
 </html>

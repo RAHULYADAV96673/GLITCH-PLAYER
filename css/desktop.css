@@ -1,0 +1,197 @@
+#desktop {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.6s ease;
+  padding-top: 28px;
+}
+
+#desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.22);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.desktop-icons {
+  position: absolute;
+  top: 48px;
+  left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 1;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 10px;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.desktop-icon:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+.desktop-icon:active {
+  transform: scale(0.95);
+}
+
+.desktop-icon .icon-emoji {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+.desktop-icon span {
+  font-size: 0.72rem;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  line-height: 1.3;
+  color: #fff;
+}
+
+#menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 2px;
+  z-index: 2000;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.menubar-apple {
+  font-size: 1rem;
+  margin-right: 6px;
+  cursor: pointer;
+  padding: 0 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: background 0.15s;
+  color: #fff;
+}
+
+.menubar-apple:hover { background: rgba(255,255,255,0.15); }
+
+.menubar-item {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.88);
+  padding: 0 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.menubar-item:hover { background: rgba(255,255,255,0.15); }
+
+.menubar-bold { font-weight: 600; }
+
+.menubar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#menubar-clock {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+}
+
+#desktop-clock {
+  position: absolute;
+  right: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: right;
+  z-index: 1;
+  pointer-events: none;
+  animation: clockFadeIn 1.2s ease 2.4s both;
+}
+
+@keyframes clockFadeIn {
+  from { opacity: 0; transform: translateY(calc(-50% + 20px)); }
+  to   { opacity: 1; transform: translateY(-50%); }
+}
+
+#desk-time {
+  font-size: 4.8rem;
+  font-weight: 200;
+  letter-spacing: -2px;
+  color: #fff;
+  text-shadow: 0 2px 32px rgba(0,0,0,0.6);
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+.desk-colon {
+  animation: colonBlink 1s step-start infinite;
+  margin: 0 2px;
+}
+
+@keyframes colonBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+
+.desk-ampm {
+  font-size: 1.4rem;
+  font-weight: 400;
+  margin-left: 8px;
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+
+#desk-date {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+}
+
+#desk-seconds-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 1px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+#desk-seconds-fill {
+  height: 100%;
+  background: rgba(255,255,255,0.7);
+  border-radius: 1px;
+  transition: width 1s linear;
+}

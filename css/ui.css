@@ -1,0 +1,135 @@
+#context-menu {
+  position: fixed;
+  background: rgba(28, 28, 42, 0.92);
+  backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 6px;
+  z-index: 9999;
+  min-width: 190px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
+  display: none;
+  animation: menuPop 0.15s cubic-bezier(0.34, 1.4, 0.64, 1) forwards;
+  transform-origin: top left;
+}
+
+@keyframes menuPop {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.ctx-item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.1s;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ctx-item:hover { background: rgba(124, 111, 247, 0.28); }
+.ctx-item:active { background: rgba(124, 111, 247, 0.45); }
+
+.ctx-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 4px 0;
+}
+
+#notification {
+  position: fixed;
+  top: 40px;
+  right: 16px;
+  background: rgba(28, 28, 42, 0.92);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 12px 14px;
+  min-width: 260px;
+  max-width: 320px;
+  z-index: 8000;
+  transform: translateX(340px) translateY(-8px);
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.3s ease;
+  font-size: 0.84rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+}
+
+#notification.show {
+  transform: translateX(0) translateY(0);
+  opacity: 1;
+}
+
+#notif-icon { font-size: 1.6rem; flex-shrink: 0; }
+
+#notif-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+  font-size: 0.84rem;
+}
+
+#notif-body {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+#boot-screen {
+  position: fixed;
+  inset: 0;
+  background: #080810;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  transition: opacity 0.7s ease;
+}
+
+.boot-logo {
+  font-size: 3.5rem;
+  margin-bottom: 14px;
+  animation: bootPulse 1.5s ease infinite;
+}
+
+@keyframes bootPulse {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(124,111,247,0.3)); }
+  50%       { filter: drop-shadow(0 0 24px rgba(124,111,247,0.8)); }
+}
+
+.boot-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #a09bf7;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+}
+
+.boot-bar {
+  width: 180px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 1px;
+  margin-top: 28px;
+  overflow: hidden;
+}
+
+.boot-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #7c6ff7, #a09bf7);
+  width: 0;
+  border-radius: 1px;
+  animation: bootLoad 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes bootLoad {
+  0%   { width: 0; }
+  60%  { width: 75%; }
+  100% { width: 100%; }
+}

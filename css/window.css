@@ -1,0 +1,201 @@
+.win {
+  position: absolute;
+  min-width: 320px;
+  min-height: 200px;
+  background: rgba(22, 22, 34, 0.88);
+  backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.55),
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 100;
+  transform-origin: bottom center;
+  animation: winOpen 0.28s cubic-bezier(0.34, 1.35, 0.64, 1) forwards;
+}
+
+@keyframes winOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.82) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.win.closing {
+  animation: winClose 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+@keyframes winClose {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.88) translateY(10px); }
+}
+
+.win.minimizing {
+  animation: winMinimize 0.32s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes winMinimize {
+  from { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 0; transform: scale(0.4) translateY(80px); }
+}
+
+.win.restoring {
+  animation: winRestore 0.3s cubic-bezier(0.34, 1.35, 0.64, 1) forwards;
+}
+
+@keyframes winRestore {
+  from { opacity: 0; transform: scale(0.4) translateY(80px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.win.focused {
+  border-color: rgba(160, 145, 255, 0.35);
+  box-shadow:
+    0 32px 80px rgba(0, 0, 0, 0.65),
+    0 8px 24px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(160, 145, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 200;
+}
+
+.win-titlebar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 8px;
+  cursor: grab;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+}
+
+.win-titlebar:active { cursor: grabbing; }
+
+.win-title {
+  font-size: 0.82rem;
+  font-weight: 500;
+  flex: 1;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+}
+
+.win-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.win-btn {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  transition: filter 0.12s;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.12s;
+  font-size: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-titlebar:hover .win-btn::before { opacity: 1; }
+
+.btn-close {
+  background: #ff5f57;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+}
+.btn-close::before {
+  content: '✕';
+  font-size: 7px;
+  color: rgba(100,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-min {
+  background: #febc2e;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+}
+.btn-min::before {
+  content: '−';
+  font-size: 9px;
+  color: rgba(100,60,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-max {
+  background: #28c840;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+}
+.btn-max::before {
+  content: '+';
+  font-size: 9px;
+  color: rgba(0,60,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.win-btn:hover { filter: brightness(1.15); }
+.win-btn:active { filter: brightness(0.9); transform: scale(0.9); }
+
+.win-body {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+}
+
+.win-body::-webkit-scrollbar { width: 6px; }
+.win-body::-webkit-scrollbar-track { background: transparent; }
+.win-body::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 3px;
+}
+
+.win-resize-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 18px;
+  height: 18px;
+  cursor: se-resize;
+  z-index: 10;
+}
+
+.win-resize-handle::after {
+  content: '';
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid rgba(255,255,255,0.25);
+  border-bottom: 2px solid rgba(255,255,255,0.25);
+  border-radius: 0 0 3px 0;
+}
