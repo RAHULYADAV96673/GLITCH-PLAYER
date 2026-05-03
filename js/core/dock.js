@@ -10,7 +10,16 @@ function renderDock() {
     button.id = `dock-${id}`;
     button.title = app.name;
     button.innerHTML = iconMarkup(app);
-    button.addEventListener("click", () => openApp(id));
+
+    button.addEventListener("click", () => {
+      if (typeof openApp !== "function") {
+        console.error("openApp is not loaded. Check js/core/windowmanger.js script path and order.");
+        return;
+      }
+
+      openApp(id);
+    });
+
     dock.appendChild(button);
   });
 }
@@ -40,7 +49,9 @@ function bindDockMagnification() {
 }
 
 function updateDockIndicators() {
-  document.querySelectorAll(".dock-item").forEach(item => item.classList.remove("running"));
+  document.querySelectorAll(".dock-item").forEach(item => {
+    item.classList.remove("running");
+  });
 
   Object.keys(osState.openWindows).forEach(id => {
     const item = document.getElementById(`dock-${id}`);

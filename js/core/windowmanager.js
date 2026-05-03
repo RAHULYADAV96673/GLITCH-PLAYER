@@ -1,3 +1,5 @@
+console.log("windowmanager.js loaded");
+
 function openApp(id) {
   const app = appRegistry[id];
   if (!app) return;
@@ -36,12 +38,14 @@ function openApp(id) {
         ${iconMarkup(app, "app-icon mini-icon")}
         <span>${app.name}</span>
       </div>
+
       <div class="window-controls">
         <button class="window-control minimize">─</button>
         <button class="window-control maximize">□</button>
         <button class="window-control close">×</button>
       </div>
     </div>
+
     <div class="window-body">${buildAppContent(id)}</div>
     <div class="resize-handle"></div>
   `;
@@ -55,21 +59,31 @@ function openApp(id) {
   bindAppContent(id);
   focusWindow(id);
   updateRunningApps();
-  updateDockIndicators();
-  notify(`${app.name} opened`);
+
+  if (typeof updateDockIndicators === "function") {
+    updateDockIndicators();
+  }
+
 }
 
 function buildAppContent(id) {
   if (id === "settings" && typeof buildSettingsApp === "function") return buildSettingsApp();
   if (id === "terminal" && typeof buildTerminalApp === "function") return buildTerminalApp();
   if (id === "files" && typeof buildFilesApp === "function") return buildFilesApp();
-  if (id === "browser") return buildBrowserApp();
   if (id === "calculator" && typeof buildCalculatorApp === "function") return buildCalculatorApp();
-if (id === "calendar" && typeof buildCalendarApp === "function") return buildCalendarApp();
+  if (id === "compiler" && typeof buildCompilerApp === "function") return buildCompilerApp();
+  if (id === "clock" && typeof buildClockApp === "function") return buildClockApp();
+  if (id === "weather" && typeof buildWeatherApp === "function") return buildWeatherApp();
+  if (id === "calendar" && typeof buildCalendarApp === "function") return buildCalendarApp();
+  if (id === "browser") return buildBrowserApp();
+
   return `
     <div class="app-card">
       <h2>${appRegistry[id].name}</h2>
-      <p>${appRegistry[id].name} app shell is opening correctly.</p>
+      <p>${appRegistry[id].name} is registered, but its app file is not loaded or its build function is missing.</p>
+      <p style="color:var(--muted-text)">
+        Check index.html script order and make sure the app file exists.
+      </p>
     </div>
   `;
 }
@@ -78,9 +92,12 @@ function bindAppContent(id) {
   if (id === "settings" && typeof bindSettingsApp === "function") bindSettingsApp();
   if (id === "terminal" && typeof bindTerminalApp === "function") bindTerminalApp();
   if (id === "files" && typeof bindFilesApp === "function") bindFilesApp();
-  if (id === "browser") bindBrowserApp();
   if (id === "calculator" && typeof bindCalculatorApp === "function") bindCalculatorApp();
-if (id === "calendar" && typeof bindCalendarApp === "function") bindCalendarApp();
+  if (id === "compiler" && typeof bindCompilerApp === "function") bindCompilerApp();
+  if (id === "clock" && typeof bindClockApp === "function") bindClockApp();
+  if (id === "weather" && typeof bindWeatherApp === "function") bindWeatherApp();
+  if (id === "calendar" && typeof bindCalendarApp === "function") bindCalendarApp();
+  if (id === "browser" && typeof bindBrowserApp === "function") bindBrowserApp();
 }
 
 function bindWindowControls(windowElement, id) {
@@ -120,7 +137,10 @@ function closeApp(id) {
     delete osState.previousWindowState[id];
 
     updateRunningApps();
-    updateDockIndicators();
+
+    if (typeof updateDockIndicators === "function") {
+      updateDockIndicators();
+    }
   }, 160);
 }
 
@@ -262,7 +282,11 @@ function buildBrowserApp() {
         <button id="browser-go" class="app-button">Go</button>
         <button id="browser-open-tab" class="app-button">Open Tab</button>
       </div>
-      <div class="browser-note">Some websites block embedded browser view. Use Open Tab if a page refuses to load.</div>
+
+      <div class="browser-note">
+        Some websites block embedded browser view. Use Open Tab if a page refuses to load.
+      </div>
+
       <iframe id="browser-frame" class="browser-frame" src="https://example.com"></iframe>
     </div>
   `;
@@ -275,9 +299,11 @@ function bindBrowserApp() {
 
   function normalize(value) {
     const raw = value.trim();
+
     if (!raw) return "https://example.com";
     if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
     if (raw.includes(".") && !raw.includes(" ")) return `https://${raw}`;
+
     return `https://www.google.com/search?q=${encodeURIComponent(raw)}`;
   }
 
@@ -308,3 +334,5 @@ function bindBrowserApp() {
     if (event.key === "Enter") go();
   });
 }
+
+window.openApp = openApp;
