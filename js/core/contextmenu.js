@@ -1,17 +1,19 @@
-const desktopEl    = document.getElementById('desktop');
-const contextMenuEl = document.getElementById('context-menu');
+const desktopMenu = document.getElementById('desktop-ctx-menu');
 
-desktopEl.addEventListener('contextmenu', e => {
+document.getElementById('desktop').addEventListener('contextmenu', e => {
+  if (e.target.closest('.d-icon')) return;
   e.preventDefault();
-  const safeX = Math.min(e.clientX, window.innerWidth  - 200);
-  const safeY = Math.min(e.clientY, window.innerHeight - 160);
-  contextMenuEl.style.left    = safeX + 'px';
-  contextMenuEl.style.top     = safeY + 'px';
-  contextMenuEl.style.display = 'block';
+  const x = Math.min(e.clientX, window.innerWidth  - 200);
+  const y = Math.min(e.clientY, window.innerHeight - 180);
+  desktopMenu.style.left    = x + 'px';
+  desktopMenu.style.top     = y + 'px';
+  desktopMenu.style.display = 'block';
 });
 
-document.addEventListener('click', hideContextMenu);
+document.addEventListener('click', e => {
+  if (!e.target.closest('#desktop-ctx-menu')) hideDesktopMenu();
+});
 
-function hideContextMenu() {
-  contextMenuEl.style.display = 'none';
+function hideDesktopMenu() {
+  desktopMenu.style.display = 'none';
 }

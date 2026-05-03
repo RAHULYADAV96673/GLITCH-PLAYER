@@ -1,25 +1,51 @@
-const wallpaperList = [
-  'https://i.ibb.co/SwfZxJKP/index-bg.jpg',
-  'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80',
-  'https://images.unsplash.com/photo-1475274047050-1d0c0975864c?w=1920&q=80',
-  'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=1920&q=80',
-  'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80',
-  'https://images.unsplash.com/photo-1540206395-68808572332f?w=1920&q=80',
-];
+function applyWallpaper() {
+  const wallpaperLayer = document.getElementById("wallpaper-layer");
+  const wallpaperVideo = document.getElementById("wallpaper-video");
+  const settings = osState.settings;
 
-let activeWallpaperIndex = 0;
+  if (!wallpaperLayer || !wallpaperVideo) return;
 
-function applyWallpaper(index) {
-  activeWallpaperIndex = index;
-  document.getElementById('desktop').style.backgroundImage = `url('${wallpaperList[index]}')`;
-  document.querySelectorAll('.wallpaper-thumb').forEach((thumb, i) => {
-    thumb.classList.toggle('active', i === index);
-  });
-}
+  wallpaperVideo.pause();
+  wallpaperVideo.removeAttribute("src");
+  wallpaperVideo.style.display = "none";
 
-function cycleWallpaper() {
-  hideContextMenu();
-  const next = (activeWallpaperIndex + 1) % wallpaperList.length;
-  applyWallpaper(next);
-  showNotification('Wallpaper Changed', 'New wallpaper applied!', '🖼️');
+  if (settings.liveWallpaper) {
+    wallpaperVideo.src = "https://cdn.coverr.co/videos/coverr-city-lights-1565/1080p.mp4";
+    wallpaperVideo.style.display = "block";
+    wallpaperVideo.play();
+    wallpaperLayer.style.background = "#050712";
+    return;
+  }
+
+  if (settings.customWallpaper) {
+    if (settings.customWallpaperType === "image") {
+      wallpaperLayer.style.background = `url("${settings.customWallpaper}") center / cover`;
+      return;
+    }
+
+    if (settings.customWallpaperType === "video") {
+      wallpaperVideo.src = settings.customWallpaper;
+      wallpaperVideo.style.display = "block";
+      wallpaperVideo.play();
+      wallpaperLayer.style.background = "#050712";
+      return;
+    }
+  }
+
+  if (settings.wallpaper === "aurora") {
+    wallpaperLayer.style.background = "radial-gradient(circle at 20% 20%, rgba(139,92,246,.48), transparent 30%), radial-gradient(circle at 80% 30%, rgba(14,165,233,.38), transparent 35%), #020617";
+    return;
+  }
+
+  if (settings.wallpaper === "sunset") {
+    wallpaperLayer.style.background = "linear-gradient(135deg, #25133f, #7c2d12, #f97316)";
+    return;
+  }
+
+  if (settings.wallpaper === "forest") {
+    wallpaperLayer.style.background = "linear-gradient(135deg, #052e16, #14532d, #0f172a)";
+    return;
+  }
+
+  wallpaperLayer.style.background = "radial-gradient(circle at 14% 18%, rgba(255, 24, 216, 0.38), transparent 30%), radial-gradient(circle at 82% 20%, rgba(0, 217, 255, 0.25), transparent 34%), linear-gradient(135deg, #060817, #101827 50%, #030712)";
 }

@@ -1,47 +1,49 @@
-const dockEl = document.getElementById('dock');
+function renderDock() {
+  const dock = document.getElementById("dock");
+  if (!dock) return;
 
-dockEl.addEventListener('mousemove', function(e) {
-  const items = Array.from(dockEl.querySelectorAll('.dock-item'));
-  const ICON_SIZE     = 54;
-  const MAX_SCALE     = 1.7;
-  const EFFECT_RADIUS = 90;
+  dock.innerHTML = "";
 
-  items.forEach(item => {
-    const wrap = item.querySelector('.dock-icon-wrap');
-    if (!wrap) return;
-
-    const rect   = item.getBoundingClientRect();
-    const center = rect.left + rect.width / 2;
-    const dist   = Math.abs(e.clientX - center);
-
-    if (dist < EFFECT_RADIUS) {
-      const ratio = 1 - dist / EFFECT_RADIUS;
-      const scale = 1 + (MAX_SCALE - 1) * ratio;
-      const lift  = (scale - 1) * ICON_SIZE * 0.6;
-      wrap.style.transform = `translateY(-${lift}px) scale(${scale})`;
-    } else {
-      wrap.style.transform = '';
-    }
+  Object.entries(appRegistry).forEach(([id, app]) => {
+    const button = document.createElement("button");
+    button.className = "dock-item";
+    button.id = `dock-${id}`;
+    button.title = app.name;
+    button.innerHTML = iconMarkup(app);
+    button.addEventListener("click", () => openApp(id));
+    dock.appendChild(button);
   });
-});
+}
 
-dockEl.addEventListener('mouseleave', function() {
-  dockEl.querySelectorAll('.dock-icon-wrap').forEach(w => {
-    w.style.transform = '';
+function bindDockMagnification() {
+  const dock = document.getElementById("dock");
+  if (!dock) return;
+
+  dock.addEventListener("mousemove", event => {
+    [...dock.querySelectorAll(".dock-item")].forEach(item => {
+      const rect = item.getBoundingClientRect();
+      const center = rect.left + rect.width / 2;
+      const distance = Math.abs(event.clientX - center);
+      const strength = Math.max(0, 1 - distance / 135);
+      const scale = 1 + strength * 0.58;
+      const lift = strength * 20;
+
+      item.style.transform = `translateY(${-lift}px) scale(${scale})`;
+    });
   });
-});
 
-function triggerDockBounce(id) {
-  const dockItem = document.getElementById('dock-' + id);
-  if (!dockItem) return;
-  const wrap = dockItem.querySelector('.dock-icon-wrap');
-  if (!wrap) return;
+  dock.addEventListener("mouseleave", () => {
+    dock.querySelectorAll(".dock-item").forEach(item => {
+      item.style.transform = "";
+    });
+  });
+}
 
-  wrap.classList.remove('bouncing');
-  void wrap.offsetWidth;
+function updateDockIndicators() {
+  document.querySelectorAll(".dock-item").forEach(item => item.classList.remove("running"));
 
-  wrap.style.animation = 'dockBounce 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97)';
-  wrap.addEventListener('animationend', () => {
-    wrap.style.animation = '';
-  }, { once: true });
+  Object.keys(osState.openWindows).forEach(id => {
+    const item = document.getElementById(`dock-${id}`);
+    if (item) item.classList.add("running");
+  });
 }

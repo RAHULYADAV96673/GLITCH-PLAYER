@@ -1,0 +1,73 @@
+#menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--menubar-h);
+  background: rgba(0,0,0,0.48);
+  backdrop-filter: blur(28px) saturate(160%);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  z-index: 3000;
+}
+
+.mb-left, .mb-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mb-apple {
+  font-size: 1rem;
+  color: var(--accent);
+  padding: 0 8px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.15s;
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+.mb-apple:hover { background: rgba(255,255,255,0.12); }
+
+.mb-app-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  padding: 0 8px;
+  height: var(--menubar-h);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.15s;
+}
+
+.mb-item {
+  font-size: 0.77rem;
+  color: rgba(255,255,255,0.82);
+  padding: 0 8px;
+  height: var(--menubar-h);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.mb-item:hover, .mb-app-name:hover { background: rgba(255,255,255,0.13); }
+
+.mb-clock {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.88);
+  padding: 0 8px;
+  white-space: nowrap;
+}

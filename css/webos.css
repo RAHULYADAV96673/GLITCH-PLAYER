@@ -1,0 +1,27 @@
+@media (max-width: 920px) {
+  .dock {
+    display: none;
+  }
+
+  .taskbar-search-box {
+    display: none;
+  }
+
+  #clock-time {
+    font-size: 68px;
+  }
+
+  #clock-date {
+    font-size: 16px;
+    letter-spacing: 4px;
+  }
+
+  .desktop-clock {
+    right: 22px;
+  }
+
+  .settings-layout,
+  .files-layout {
+    grid-template-columns: 1fr;
+  }
+}

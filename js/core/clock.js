@@ -1,41 +1,91 @@
- const DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-const MONTH_NAMES = ['January','February','March','April','May','June',
-                     'July','August','September','October','November','December'];
-const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun',
-                     'Jul','Aug','Sep','Oct','Nov','Dec'];
-
 function updateClock() {
-  const now     = new Date();
-  let   hours   = now.getHours();
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-  const ampm    = hours >= 12 ? 'PM' : 'AM';
-  const displayHours = hours % 12 || 12;
+  const settings = osState.settings;
+  const now = new Date();
+  const hour12 = settings.clockFormat === "12";
 
-  const hStr = String(displayHours);
-  const mStr = String(minutes).padStart(2, '0');
+  const day = now.toLocaleDateString([], {
+    weekday: "long"
+  }).toUpperCase();
 
-  const menubarEl = document.getElementById('menubar-clock');
-  if (menubarEl) {
-    const h24 = String(now.getHours()).padStart(2,'0');
-    const m24 = String(minutes).padStart(2,'0');
-    const dayShort = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][now.getDay()];
-    menubarEl.textContent = `${dayShort} ${now.getDate()} ${MONTH_SHORT[now.getMonth()]}  ${h24}:${m24}`;
-  }
+  const date = now.toLocaleDateString([], {
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  }).replace(",", "").toUpperCase() + ".";
 
-  const deskHours = document.getElementById('desk-hours');
-  const deskMins  = document.getElementById('desk-minutes');
-  const deskAmpm  = document.getElementById('desk-ampm');
-  const deskDate  = document.getElementById('desk-date');
-  const secsFill  = document.getElementById('desk-seconds-fill');
+  const time = now.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12
+  });
 
-  if (deskHours)  deskHours.textContent  = hStr;
-  if (deskMins)   deskMins.textContent   = mStr;
-  if (deskAmpm)   deskAmpm.textContent   = ampm;
-  if (deskDate)   deskDate.textContent   =
-    `${DAY_NAMES[now.getDay()]}, ${MONTH_NAMES[now.getMonth()]} ${now.getDate()}`;
-  if (secsFill)   secsFill.style.width   = ((seconds / 60) * 100) + '%';
+  const clockDay = document.getElementById("clock-day");
+  const clockDate = document.getElementById("clock-date");
+  const clockTime = document.getElementById("clock-time");
+  const trayTime = document.getElementById("tray-time");
+
+  if (clockDay) clockDay.textContent = day;
+  if (clockDate) clockDate.textContent = date;
+  if (clockTime) clockTime.textContent = `- ${time} -`;
+  if (trayTime) trayTime.textContent = time;
 }
 
-updateClock();
-setInterval(updateClock, 1000);
+function applyClockStyle() {
+  const settings = osState.settings;
+  const clockDay = document.getElementById("clock-day");
+  const clockDate = document.getElementById("clock-date");
+  const clockTime = document.getElementById("clock-time");
+
+  if (clockDay) {
+    clockDay.style.fontSize = settings.clockSize + "px";
+    clockDay.style.color = settings.clockColor;
+    clockDay.style.textShadow = `0 2px 18px rgba(0,0,0,.75), 0 0 ${settings.clockGlow}px rgba(255,255,255,.16)`;
+  }
+
+  if (clockDate) {
+    clockDate.style.color = settings.clockDateColor;
+  }
+
+  if (clockTime) {
+    clockTime.style.color = settings.clockDateColor;
+  }
+}
+
+function makeClockMovable() {
+  const clock = document.getElementById("desktop-clock");
+  if (!clock) return;
+
+  const saved = loadFromStorage("glitch-clock-position", null);
+
+  if (saved) {
+    clock.style.left = saved.left + "px";
+    clock.style.top = saved.top + "px";
+    clock.style.right = "auto";
+  }
+
+  clock.addEventListener("mousedown", event => {
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startLeft = clock.offsetLeft;
+    const startTop = clock.offsetTop;
+
+    function move(e) {
+      clock.style.left = startLeft + e.clientX - startX + "px";
+      clock.style.top = startTop + e.clientY - startY + "px";
+      clock.style.right = "auto";
+    }
+
+    function end() {
+      document.removeEventListener("mousemove", move);
+      document.removeEventListener("mouseup", end);
+
+      saveToStorage("glitch-clock-position", {
+        left: clock.offsetLeft,
+        top: clock.offsetTop
+      });
+    }
+
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", end);
+  });
+}

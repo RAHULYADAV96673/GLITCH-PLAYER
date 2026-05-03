@@ -1,124 +1,122 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WebOS</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/desktop.css"/>
-  <link rel="stylesheet" href="css/dock.css"/>
-  <link rel="stylesheet" href="css/window.css"/>
-  <link rel="stylesheet" href="css/apps.css"/>
-  <link rel="stylesheet" href="css/ui.css"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GLITCH OS</title>
+
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="stylesheet" href="css/reset.css?v=10">
+  <link rel="stylesheet" href="css/ui.css?v=10">
+  <link rel="stylesheet" href="css/desktop.css?v=10">
+  <link rel="stylesheet" href="css/window.css?v=10">
+  <link rel="stylesheet" href="css/dock.css?v=10">
+  <link rel="stylesheet" href="css/taskbar.css?v=10">
+  <link rel="stylesheet" href="css/startmenu.css?v=10">
+  <link rel="stylesheet" href="css/quicksettings.css?v=10">
+  <link rel="stylesheet" href="css/apps.css?v=10">
+  <link rel="stylesheet" href="css/webos.css?v=10">
 </head>
+
 <body>
+  <div id="wallpaper-layer"></div>
+  <video id="wallpaper-video" muted loop playsinline></video>
+  <div id="wallpaper-overlay"></div>
 
-  <div id="boot-screen">
-    <div class="boot-logo">💻</div>
-    <div class="boot-name">WebOS</div>
-    <div class="boot-bar"><div class="boot-progress"></div></div>
-  </div>
+  <main id="desktop">
+    <div id="dynamic-island">GLITCH OS ready</div>
 
-  <div id="desktop">
+    <section id="desktop-clock" class="desktop-clock mond-clock">
+  <div id="clock-day">MONDAY</div>
+  <div id="clock-date">03 SEPTEMBER, 2018.</div>
+  <div id="clock-time">- 20:54 -</div>
+</section>
 
-    <div class="desktop-icons">
-      <div class="desktop-icon" ondblclick="openApp('explorer')">
-        <div class="icon-emoji">📁</div><span>Files</span>
-      </div>
-      <div class="desktop-icon" ondblclick="openApp('notepad')">
-        <div class="icon-emoji">📝</div><span>Notepad</span>
-      </div>
-      <div class="desktop-icon" ondblclick="openApp('calc')">
-        <div class="icon-emoji">🧮</div><span>Calculator</span>
-      </div>
-      <div class="desktop-icon" ondblclick="openApp('settings')">
-        <div class="icon-emoji">⚙️</div><span>Settings</span>
-      </div>
-      <div class="desktop-icon" ondblclick="openApp('about')">
-        <div class="icon-emoji">ℹ️</div><span>About</span>
-      </div>
-    </div>
+    <section id="desktop-icons" class="desktop-icons"></section>
+    <section id="window-layer" class="window-layer"></section>
 
-    <div id="desktop-clock">
-      <div id="desk-time">
-        <span id="desk-hours">00</span><span class="desk-colon">:</span><span id="desk-minutes">00</span><span class="desk-ampm" id="desk-ampm">AM</span>
+    <section id="start-menu" class="start-menu hidden">
+      <div class="start-menu-header">
+        <div>
+          <h2>GLITCH OS</h2>
+          <p>Apps, files, settings and tools</p>
+        </div>
+        <button id="start-close" class="ghost-button">×</button>
       </div>
-      <div id="desk-date"></div>
-      <div id="desk-seconds-bar"><div id="desk-seconds-fill"></div></div>
-    </div>
 
-  </div>
-
-  <div id="menubar">
-    <span class="menubar-apple">⌘</span>
-    <span class="menubar-item menubar-bold" id="menubar-appname">Finder</span>
-    <span class="menubar-item">File</span>
-    <span class="menubar-item">Edit</span>
-    <span class="menubar-item">View</span>
-    <div class="menubar-right">
-      <span id="menubar-clock"></span>
-    </div>
-  </div>
-
-  <div id="dock-container">
-    <div id="dock">
-      <div class="dock-item" data-app="explorer" onclick="openApp('explorer')" id="dock-explorer">
-        <div class="dock-icon-wrap"><span>📁</span></div>
-        <span class="dock-label">Files</span>
-        <div class="dock-dot" id="dot-explorer"></div>
+      <div class="start-search">
+        <input id="start-search-input" placeholder="Search apps">
       </div>
-      <div class="dock-item" data-app="notepad" onclick="openApp('notepad')" id="dock-notepad">
-        <div class="dock-icon-wrap"><span>📝</span></div>
-        <span class="dock-label">Notepad</span>
-        <div class="dock-dot" id="dot-notepad"></div>
-      </div>
-      <div class="dock-item" data-app="calc" onclick="openApp('calc')" id="dock-calc">
-        <div class="dock-icon-wrap"><span>🧮</span></div>
-        <span class="dock-label">Calculator</span>
-        <div class="dock-dot" id="dot-calc"></div>
-      </div>
-      <div class="dock-item" data-app="settings" onclick="openApp('settings')" id="dock-settings">
-        <div class="dock-icon-wrap"><span>⚙️</span></div>
-        <span class="dock-label">Settings</span>
-        <div class="dock-dot" id="dot-settings"></div>
-      </div>
-      <div class="dock-divider"></div>
-      <div class="dock-item" data-app="about" onclick="openApp('about')" id="dock-about">
-        <div class="dock-icon-wrap"><span>ℹ️</span></div>
-        <span class="dock-label">About</span>
-        <div class="dock-dot" id="dot-about"></div>
-      </div>
-    </div>
-  </div>
 
-  <div id="context-menu">
-    <div class="ctx-item" onclick="cycleWallpaper()">🖼️ Change Wallpaper</div>
-    <div class="ctx-item" onclick="openApp('settings')">⚙️ Settings</div>
-    <div class="ctx-sep"></div>
-    <div class="ctx-item" onclick="openApp('about')">ℹ️ About WebOS</div>
-  </div>
+      <div id="start-apps" class="start-apps"></div>
 
-  <div id="notification">
-    <div id="notif-icon">💻</div>
-    <div id="notif-text">
-      <div id="notif-title">WebOS</div>
-      <div id="notif-body">Welcome! Right-click desktop for options.</div>
-    </div>
-  </div>
+      <div class="start-footer">
+        <button data-power="Sleep">Sleep</button>
+        <button data-power="Restart">Restart</button>
+        <button data-power="Shut Down">Shut Down</button>
+      </div>
+    </section>
 
-  <script src="js/core/wallpapers.js"></script>
-  <script src="js/core/clock.js"></script>
-  <script src="js/core/notification.js"></script>
-  <script src="js/core/contextmenu.js"></script>
-  <script src="js/core/windowmanager.js"></script>
-  <script src="js/core/dock.js"></script>
-  <script src="js/apps/explorer.js"></script>
-  <script src="js/apps/notepad.js"></script>
-  <script src="js/apps/calculator.js"></script>
-  <script src="js/apps/settings.js"></script>
-  <script src="js/apps/about.js"></script>
-  <script src="js/core/boot.js"></script>
+    <section id="quick-settings" class="quick-settings hidden">
+      <div class="quick-settings-header">
+        <strong>Quick Settings</strong>
+        <span id="quick-status-text">Online</span>
+      </div>
+
+      <div class="quick-toggle-grid">
+        <button id="wifi-toggle">Wi-Fi</button>
+        <button id="bluetooth-toggle">Bluetooth</button>
+        <button id="theme-toggle">Theme</button>
+        <button id="live-wallpaper-toggle">Live</button>
+      </div>
+
+      <label class="slider-row">
+        <span>Volume</span>
+        <input id="volume-slider" type="range" min="0" max="100">
+      </label>
+
+      <label class="slider-row">
+        <span>Brightness</span>
+        <input id="brightness-slider" type="range" min="45" max="110">
+      </label>
+
+      <div id="quick-now-playing" class="quick-now-playing">Nothing playing</div>
+    </section>
+
+    <section id="taskbar" class="taskbar">
+      <button id="start-button" class="start-button">◆</button>
+
+      <div class="taskbar-search-box">
+        <input id="taskbar-search" placeholder="Search apps">
+      </div>
+
+      <div id="running-apps" class="running-apps"></div>
+
+      <button id="system-tray" class="system-tray">
+        <span id="tray-wifi">Wi-Fi</span>
+        <span id="tray-battery">87%</span>
+        <span id="tray-volume">Vol</span>
+        <span id="tray-time">00:00</span>
+      </button>
+    </section>
+
+    <section id="dock" class="dock"></section>
+  </main>
+
+   <script src="js/core/state.js?v=11"></script>
+<script src="js/core/dynamicisland.js?v=11"></script>
+<script src="js/core/wallpapers.js?v=11"></script>
+<script src="js/core/clock.js?v=11"></script>
+<script src="js/core/desktopicons.js?v=11"></script>
+<script src="js/core/dock.js?v=11"></script>
+<script src="js/apps/settings.js?v=11"></script>
+<script src="js/apps/terminal.js?v=11"></script>
+<script src="js/apps/files.js?v=11"></script>
+<script src="js/core/windowmanager.js?v=11"></script>
+<script src="js/core/startmenu.js?v=11"></script>
+<script src="js/core/quicksettings.js?v=11"></script>
+<script src="js/core/boot.js?v=11"></script>
+<script src="js/webos.js?v=11"></script>
 </body>
 </html>
