@@ -77,6 +77,11 @@ function buildAppContent(id) {
   if (id === "calendar" && typeof buildCalendarApp === "function") return buildCalendarApp();
   if (id === "browser") return buildBrowserApp();
 
+  if (typeof buildRegisteredApp === "function") {
+    const registered = buildRegisteredApp(id);
+    if (registered !== null) return registered;
+  }
+
   return `
     <div class="app-card">
       <h2>${appRegistry[id].name}</h2>
@@ -98,6 +103,7 @@ function bindAppContent(id) {
   if (id === "weather" && typeof bindWeatherApp === "function") bindWeatherApp();
   if (id === "calendar" && typeof bindCalendarApp === "function") bindCalendarApp();
   if (id === "browser" && typeof bindBrowserApp === "function") bindBrowserApp();
+  if (typeof bindRegisteredApp === "function") bindRegisteredApp(id);
 }
 
 function bindWindowControls(windowElement, id) {

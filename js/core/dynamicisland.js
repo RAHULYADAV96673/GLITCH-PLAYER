@@ -125,3 +125,41 @@ function saveToStorage(key, value) {
 function saveSettings() {
   saveToStorage("glitch-settings", osState.settings);
 }
+function notify(message) {
+  const island = document.getElementById("dynamic-island");
+  if (!island) return;
+  clearTimeout(notify._timer);
+  island.textContent = message;
+  island.classList.add("expanded");
+  notify._timer = setTimeout(() => island.classList.remove("expanded"), 950);
+}
+
+// OS namespace for app-level state
+const OS = {
+  notes: [],
+  activeNoteId: null
+};
+
+// App registration system used by notes.js / draw.js
+const _registeredApps = {};
+
+function registerApp(id, buildFn, bindFn) {
+  _registeredApps[id] = { build: buildFn, bind: bindFn || null };
+}
+
+// Hook into windowmanager buildAppContent / bindAppContent
+// These are called after windowmanager.js defines them, so we patch via wrapper
+function buildRegisteredApp(id) {
+  if (_registeredApps[id]) {
+    return _registeredApps[id].build();
+  }
+  return null;
+}
+
+function bindRegisteredApp(id) {
+  if (_registeredApps[id]) {
+    // Fire appMounted event so apps can do post-render setup
+    document.dispatchEvent(new CustomEvent("appMounted", { detail: { id } }));
+    if (_registeredApps[id].bind) _registeredApps[id].bind();
+  }
+}
